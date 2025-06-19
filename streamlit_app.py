@@ -98,42 +98,159 @@ class StreamlitRotordynamicApp:
         
         # Bearing Properties
         st.sidebar.subheader("Bearing Properties")
-        D = st.sidebar.number_input(
-            "Bearing Diameter (mm)", 
-            value=30.0, 
-            min_value=10.0, 
-            max_value=100.0,
-            step=1.0,
-            help="Journal bearing diameter"
-        ) * 1e-3
         
-        C = st.sidebar.number_input(
-            "Bearing Length (mm)", 
-            value=20.0, 
-            min_value=5.0, 
-            max_value=100.0,
-            step=1.0,
-            help="Bearing axial length"
-        ) * 1e-3
-        
-        delta = st.sidebar.number_input(
-            "Radial Clearance (μm)", 
-            value=90.0, 
-            min_value=10.0, 
-            max_value=500.0,
-            step=1.0,
-            help="Bearing radial clearance"
-        ) * 1e-6
-        
-        mi = st.sidebar.number_input(
-            "Oil Viscosity (Pa·s)", 
-            value=0.051, 
-            min_value=0.001, 
-            max_value=1.0,
-            step=0.001,
-            format="%.3f",
-            help="Lubricant dynamic viscosity"
+        # Bearing type selection
+        bearing1_type = st.sidebar.selectbox(
+            "Bearing 1 Type",
+            ["journal", "ball"],
+            index=0,
+            help="Select bearing type for bearing 1"
         )
+        
+        bearing2_type = st.sidebar.selectbox(
+            "Bearing 2 Type", 
+            ["journal", "ball"],
+            index=0,
+            help="Select bearing type for bearing 2"
+        )
+        
+        # Journal bearing properties (shown if any bearing is journal type)
+        if bearing1_type == "journal" or bearing2_type == "journal":
+            st.sidebar.markdown("**Journal Bearing Properties:**")
+            D = st.sidebar.number_input(
+                "Bearing Diameter (mm)", 
+                value=30.0, 
+                min_value=10.0, 
+                max_value=100.0,
+                step=1.0,
+                help="Journal bearing diameter"
+            ) * 1e-3
+            
+            C = st.sidebar.number_input(
+                "Bearing Length (mm)", 
+                value=20.0, 
+                min_value=5.0, 
+                max_value=100.0,
+                step=1.0,
+                help="Bearing axial length"
+            ) * 1e-3
+            
+            delta = st.sidebar.number_input(
+                "Radial Clearance (μm)", 
+                value=90.0, 
+                min_value=10.0, 
+                max_value=500.0,
+                step=1.0,
+                help="Bearing radial clearance"
+            ) * 1e-6
+            
+            mi = st.sidebar.number_input(
+                "Oil Viscosity (Pa·s)", 
+                value=0.051, 
+                min_value=0.001, 
+                max_value=1.0,
+                step=0.001,
+                format="%.3f",
+                help="Lubricant dynamic viscosity"
+            )
+        else:
+            # Default values for journal bearings (even if not used)
+            D = 30e-3
+            C = 20e-3
+            delta = 90e-6
+            mi = 0.051
+        
+        # Ball bearing properties (shown if any bearing is ball type)
+        if bearing1_type == "ball" or bearing2_type == "ball":
+            st.sidebar.markdown("**Ball Bearing Properties:**")
+            
+            if bearing1_type == "ball":
+                st.sidebar.markdown("*Bearing 1 (Ball):*")
+                ball1_kxx = st.sidebar.number_input(
+                    "Bearing 1 Stiffness Kxx (MN/m)",
+                    value=100.0,
+                    min_value=1.0,
+                    max_value=1000.0,
+                    step=1.0,
+                    help="Ball bearing 1 stiffness in X direction"
+                ) * 1e6
+                
+                ball1_kyy = st.sidebar.number_input(
+                    "Bearing 1 Stiffness Kyy (MN/m)",
+                    value=100.0,
+                    min_value=1.0,
+                    max_value=1000.0,
+                    step=1.0,
+                    help="Ball bearing 1 stiffness in Y direction"
+                ) * 1e6
+                
+                ball1_cxx = st.sidebar.number_input(
+                    "Bearing 1 Damping Cxx (kN·s/m)",
+                    value=1.0,
+                    min_value=0.1,
+                    max_value=10.0,
+                    step=0.1,
+                    help="Ball bearing 1 damping in X direction"
+                ) * 1e3
+                
+                ball1_cyy = st.sidebar.number_input(
+                    "Bearing 1 Damping Cyy (kN·s/m)",
+                    value=1.0,
+                    min_value=0.1,
+                    max_value=10.0,
+                    step=0.1,
+                    help="Ball bearing 1 damping in Y direction"
+                ) * 1e3
+            else:
+                ball1_kxx = ball1_kyy = 1e8
+                ball1_cxx = ball1_cyy = 1e3
+            
+            if bearing2_type == "ball":
+                st.sidebar.markdown("*Bearing 2 (Ball):*")
+                ball2_kxx = st.sidebar.number_input(
+                    "Bearing 2 Stiffness Kxx (MN/m)",
+                    value=100.0,
+                    min_value=1.0,
+                    max_value=1000.0,
+                    step=1.0,
+                    help="Ball bearing 2 stiffness in X direction"
+                ) * 1e6
+                
+                ball2_kyy = st.sidebar.number_input(
+                    "Bearing 2 Stiffness Kyy (MN/m)",
+                    value=100.0,
+                    min_value=1.0,
+                    max_value=1000.0,
+                    step=1.0,
+                    help="Ball bearing 2 stiffness in Y direction"
+                ) * 1e6
+                
+                ball2_cxx = st.sidebar.number_input(
+                    "Bearing 2 Damping Cxx (kN·s/m)",
+                    value=1.0,
+                    min_value=0.1,
+                    max_value=10.0,
+                    step=0.1,
+                    help="Ball bearing 2 damping in X direction"
+                ) * 1e3
+                
+                ball2_cyy = st.sidebar.number_input(
+                    "Bearing 2 Damping Cyy (kN·s/m)",
+                    value=1.0,
+                    min_value=0.1,
+                    max_value=10.0,
+                    step=0.1,
+                    help="Ball bearing 2 damping in Y direction"
+                ) * 1e3
+            else:
+                ball2_kxx = ball2_kyy = 1e8
+                ball2_cxx = ball2_cyy = 1e3
+        else:
+            # Default values for ball bearings (even if not used)
+            ball1_kxx = ball1_kyy = 1e8
+            ball1_cxx = ball1_cyy = 1e3
+            ball2_kxx = ball2_kyy = 1e8
+            ball2_cxx = ball2_cyy = 1e3
         
         # Component Positions
         st.sidebar.subheader("Component Positions")
@@ -196,6 +313,9 @@ class StreamlitRotordynamicApp:
         return {
             'E': E, 'rho': rho, 'de': de, 'le': le, 'dd': dd, 'md': md, 'me': me,
             'D': D, 'C': C, 'delta': delta, 'mi': mi,
+            'bearing1_type': bearing1_type, 'bearing2_type': bearing2_type,
+            'ball1_kxx': ball1_kxx, 'ball1_kyy': ball1_kyy, 'ball1_cxx': ball1_cxx, 'ball1_cyy': ball1_cyy,
+            'ball2_kxx': ball2_kxx, 'ball2_kyy': ball2_kyy, 'ball2_cxx': ball2_cxx, 'ball2_cyy': ball2_cyy,
             'bearing1_pos': bearing1_pos, 'disk_pos': disk_pos, 'bearing2_pos': bearing2_pos,
             'omega_min': omega_min, 'omega_max': omega_max, 'omega_step': omega_step
         }
@@ -230,6 +350,20 @@ class StreamlitRotordynamicApp:
         self.analysis.C = params['C']
         self.analysis.delta = params['delta']
         self.analysis.mi = params['mi']
+        
+        # Update bearing types
+        self.analysis.bearing1_type = params['bearing1_type']
+        self.analysis.bearing2_type = params['bearing2_type']
+        
+        # Update ball bearing properties
+        self.analysis.ball_bearing1_kxx = params['ball1_kxx']
+        self.analysis.ball_bearing1_kyy = params['ball1_kyy']
+        self.analysis.ball_bearing1_cxx = params['ball1_cxx']
+        self.analysis.ball_bearing1_cyy = params['ball1_cyy']
+        self.analysis.ball_bearing2_kxx = params['ball2_kxx']
+        self.analysis.ball_bearing2_kyy = params['ball2_kyy']
+        self.analysis.ball_bearing2_cxx = params['ball2_cxx']
+        self.analysis.ball_bearing2_cyy = params['ball2_cyy']
         
         # Update component positions for force calculations
         self.analysis.d1 = params['disk_pos'] - params['bearing1_pos']  # Distance from bearing 1 to disk
@@ -269,15 +403,21 @@ class StreamlitRotordynamicApp:
                 
                 try:
                     # Step 1: Calculate bearing coefficients
-                    status_text.text("Calculating bearing 1 coefficients...")
+                    status_text.text(f"Calculating bearing 1 coefficients ({self.analysis.bearing1_type})...")
                     progress_bar.progress(20)
                     
-                    bearing1_coeff = self.analysis.calculate_bearing_coefficients(1, self.analysis.FM1)
+                    if self.analysis.bearing1_type == "ball":
+                        bearing1_coeff = self.analysis.calculate_ball_bearing_coefficients(1)
+                    else:
+                        bearing1_coeff = self.analysis.calculate_bearing_coefficients(1, self.analysis.FM1)
                     
-                    status_text.text("Calculating bearing 2 coefficients...")
+                    status_text.text(f"Calculating bearing 2 coefficients ({self.analysis.bearing2_type})...")
                     progress_bar.progress(40)
                     
-                    bearing2_coeff = self.analysis.calculate_bearing_coefficients(2, self.analysis.FM2)
+                    if self.analysis.bearing2_type == "ball":
+                        bearing2_coeff = self.analysis.calculate_ball_bearing_coefficients(2)
+                    else:
+                        bearing2_coeff = self.analysis.calculate_bearing_coefficients(2, self.analysis.FM2)
                     
                     # Store coefficients
                     status_text.text("Processing bearing coefficients...")
@@ -403,7 +543,7 @@ class StreamlitRotordynamicApp:
         axes[0, 0].set_ylabel('Stiffness [N/m]')
         axes[0, 0].set_xlabel('Angular Velocity [rad/s]')
         axes[0, 0].legend()
-        axes[0, 0].set_title('Bearing 1 Stiffness Coefficients')
+        axes[0, 0].set_title(f'Bearing 1 Stiffness Coefficients ({analysis.bearing1_type.title()})')
         axes[0, 0].grid(True, alpha=0.3)
         
         # Bearing 2 stiffness
@@ -416,7 +556,7 @@ class StreamlitRotordynamicApp:
         axes[0, 1].set_ylabel('Stiffness [N/m]')
         axes[0, 1].set_xlabel('Angular Velocity [rad/s]')
         axes[0, 1].legend()
-        axes[0, 1].set_title('Bearing 2 Stiffness Coefficients')
+        axes[0, 1].set_title(f'Bearing 2 Stiffness Coefficients ({analysis.bearing2_type.title()})')
         axes[0, 1].grid(True, alpha=0.3)
         
         # Bearing 1 damping
@@ -428,7 +568,7 @@ class StreamlitRotordynamicApp:
         axes[1, 0].set_ylabel('Damping [N·s/m]')
         axes[1, 0].set_xlabel('Angular Velocity [rad/s]')
         axes[1, 0].legend()
-        axes[1, 0].set_title('Bearing 1 Damping Coefficients')
+        axes[1, 0].set_title(f'Bearing 1 Damping Coefficients ({analysis.bearing1_type.title()})')
         axes[1, 0].grid(True, alpha=0.3)
         
         # Bearing 2 damping
@@ -440,7 +580,7 @@ class StreamlitRotordynamicApp:
         axes[1, 1].set_ylabel('Damping [N·s/m]')
         axes[1, 1].set_xlabel('Angular Velocity [rad/s]')
         axes[1, 1].legend()
-        axes[1, 1].set_title('Bearing 2 Damping Coefficients')
+        axes[1, 1].set_title(f'Bearing 2 Damping Coefficients ({analysis.bearing2_type.title()})')
         axes[1, 1].grid(True, alpha=0.3)
         
         plt.tight_layout()
@@ -448,38 +588,78 @@ class StreamlitRotordynamicApp:
         plt.close()
     
     def plot_bearing_locus(self, analysis):
-        """Plot bearing locus"""
+        """Plot bearing locus or bearing information"""
         
-        st.subheader("Bearing Locus (Journal Center Trajectory)")
+        # Check if any bearings are journal type
+        has_journal_bearings = (analysis.bearing1_type == "journal" or analysis.bearing2_type == "journal")
         
-        # Create clearance circle
-        theta = np.linspace(0, 2*np.pi, 1000)
-        rho = 0.8
-        Z_clearance = rho * np.cos(theta)
-        Y_clearance = rho * np.sin(theta)
-        
-        # Calculate eccentricity positions
-        ExcZ1 = analysis.epsilon1 * np.sin(np.radians(analysis.phi1))
-        ExcY1 = -analysis.epsilon1 * np.cos(np.radians(analysis.phi1))
-        ExcZ2 = analysis.epsilon2 * np.sin(np.radians(analysis.phi2))
-        ExcY2 = -analysis.epsilon2 * np.cos(np.radians(analysis.phi2))
-        
-        fig, ax = plt.subplots(figsize=(8, 8))
-        ax.plot(ExcZ1, ExcY1, 'b-', linewidth=3, label='Bearing 1', alpha=0.8)
-        ax.plot(ExcZ2, ExcY2, 'r-', linewidth=3, label='Bearing 2', alpha=0.8)
-        ax.plot(Z_clearance, Y_clearance, 'k--', linewidth=2, label='Clearance circle', alpha=0.6)
-        
-        ax.set_ylim((-0.8, 0.8))
-        ax.set_ylabel('ε × cos(φ)', fontsize=12)
-        ax.set_xlabel('ε × sin(φ)', fontsize=12)
-        ax.set_xlim((-0.8, 0.8))
-        ax.legend(fontsize=11)
-        ax.set_title('Bearing Locus', fontsize=14, fontweight='bold')
-        ax.grid(True, alpha=0.3)
-        ax.set_aspect('equal')
-        
-        st.pyplot(fig)
-        plt.close()
+        if has_journal_bearings:
+            st.subheader("Bearing Locus (Journal Center Trajectory)")
+            
+            # Create clearance circle
+            theta = np.linspace(0, 2*np.pi, 1000)
+            rho = 0.8
+            Z_clearance = rho * np.cos(theta)
+            Y_clearance = rho * np.sin(theta)
+            
+            fig, ax = plt.subplots(figsize=(8, 8))
+            
+            # Plot journal bearing locus if applicable
+            if analysis.bearing1_type == "journal":
+                ExcZ1 = analysis.epsilon1 * np.sin(np.radians(analysis.phi1))
+                ExcY1 = -analysis.epsilon1 * np.cos(np.radians(analysis.phi1))
+                ax.plot(ExcZ1, ExcY1, 'b-', linewidth=3, label='Bearing 1 (Journal)', alpha=0.8)
+            
+            if analysis.bearing2_type == "journal":
+                ExcZ2 = analysis.epsilon2 * np.sin(np.radians(analysis.phi2))
+                ExcY2 = -analysis.epsilon2 * np.cos(np.radians(analysis.phi2))
+                ax.plot(ExcZ2, ExcY2, 'r-', linewidth=3, label='Bearing 2 (Journal)', alpha=0.8)
+            
+            ax.plot(Z_clearance, Y_clearance, 'k--', linewidth=2, label='Clearance circle', alpha=0.6)
+            
+            ax.set_ylim((-0.8, 0.8))
+            ax.set_ylabel('ε × cos(φ)', fontsize=12)
+            ax.set_xlabel('ε × sin(φ)', fontsize=12)
+            ax.set_xlim((-0.8, 0.8))
+            ax.legend(fontsize=11)
+            ax.set_title('Bearing Locus (Journal Bearings Only)', fontsize=14, fontweight='bold')
+            ax.grid(True, alpha=0.3)
+            ax.set_aspect('equal')
+            
+            st.pyplot(fig)
+            plt.close()
+        else:
+            st.subheader("Bearing Information")
+            st.info("📍 **Ball Bearings Used**: Ball bearings don't have a journal center trajectory like hydrodynamic bearings. They provide fixed stiffness and damping.")
+            
+            # Display ball bearing properties in a table
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**Bearing 1 (Ball Bearing)**")
+                bearing1_data = {
+                    "Property": ["Stiffness Kxx", "Stiffness Kyy", "Damping Cxx", "Damping Cyy"],
+                    "Value": [
+                        f"{analysis.ball_bearing1_kxx/1e6:.1f} MN/m",
+                        f"{analysis.ball_bearing1_kyy/1e6:.1f} MN/m", 
+                        f"{analysis.ball_bearing1_cxx/1e3:.1f} kN·s/m",
+                        f"{analysis.ball_bearing1_cyy/1e3:.1f} kN·s/m"
+                    ]
+                }
+                st.table(bearing1_data)
+            
+            with col2:
+                st.markdown("**Bearing 2 (Ball Bearing)**")
+                bearing2_data = {
+                    "Property": ["Stiffness Kxx", "Stiffness Kyy", "Damping Cxx", "Damping Cyy"],
+                    "Value": [
+                        f"{analysis.ball_bearing2_kxx/1e6:.1f} MN/m",
+                        f"{analysis.ball_bearing2_kyy/1e6:.1f} MN/m",
+                        f"{analysis.ball_bearing2_cxx/1e3:.1f} kN·s/m", 
+                        f"{analysis.ball_bearing2_cyy/1e3:.1f} kN·s/m"
+                    ]
+                }
+                st.table(bearing2_data)
     
     def plot_frequency_response(self, analysis):
         """Plot frequency response functions"""
