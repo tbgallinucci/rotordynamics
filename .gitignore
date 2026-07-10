@@ -14,6 +14,9 @@ rotordynamic_report_*.html
 *.png
 !docs/*.png
 
+# Local git helper scripts (personal tooling, not part of the project)
+*.bat
+
 # OS / editor
 .DS_Store
 Thumbs.db
