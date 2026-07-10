@@ -1,6 +1,7 @@
 # Finite Element Rotordynamic Analysis
 
 This analysis simulates the vibration behavior of a rotating shaft-disk-bearing system using finite element methods.
+Originally developed as a MATLAB code for UNICAMP mechanical enginerring post-graduate project, later translated to Python.
 Streamlit frontend accessible via: https://rotordynamics-iwuxgabyoodx9h9bibmkwv.streamlit.app/
 
 ## Overview
